@@ -137,7 +137,9 @@ def getMTfromTime(iTime):
 	
 	:param iTime: 6 element time list [y,m,d,h,m,s]
 	:returns: a named tuple containing the LS value as well as 
-	several parameters necessary for other calculations'''
+	     several parameters necessary for other calculations
+
+	'''
 	
 	DPY = 686.9713
 	refTime = [1955,4,11,10,56,0] #Mars year 1

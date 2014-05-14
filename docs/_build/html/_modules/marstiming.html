@@ -47,17 +47,26 @@
           <div class="body">
             
   <h1>Source code for marstiming</h1><div class="highlight"><pre>
-<span class="c">#!/usr/bin/python</span>
+<span class="sd">&#39;&#39;&#39;Mars timing information based on MARS24: http://www.giss.nasa.gov/tools/mars24/help/algorithm.html</span>
+
+<span class="sd">Contains several functions for calculating Mars time parameters from Earth time and vice versa.</span>
+<span class="sd">Probably the most useful functions are:</span>
+<span class="sd">getMTfromTime: gets mars time data given a 6 element time list</span>
+<span class="sd">getSZAfromTime: gets the SZA from a 6 element time list and coordinates</span>
+<span class="sd">getLTfromTime: gets the LTST from a 6 element time list and longitude</span>
+<span class="sd">getUTCfromLS: Estimates the Earth time from LS and a Mars year</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span><span class="n">array</span><span class="p">,</span><span class="n">shape</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span><span class="n">ceil</span><span class="p">,</span><span class="n">arcsin</span><span class="p">,</span><span class="n">arccos</span><span class="p">,</span><span class="n">arange</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">pdb</span> <span class="kn">import</span> <span class="n">set_trace</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+
+
 
 <span class="n">d2R</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">180.</span>
 
 <div class="viewcode-block" id="getJD"><a class="viewcode-back" href="../marstiming.html#marstiming.getJD">[docs]</a><span class="k">def</span> <span class="nf">getJD</span><span class="p">(</span><span class="n">iTime</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;Get the Julian date in seconds&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;getJD(iTime): Get the Julian date in seconds&#39;&#39;&#39;</span>
 
 	<span class="n">offset</span> <span class="o">=</span> <span class="mf">2440587.5</span> <span class="c">#JD on 1/1/1970 00:00:00 </span>
 
@@ -83,7 +92,7 @@
 
 </div>
 <div class="viewcode-block" id="getUTC"><a class="viewcode-back" href="../marstiming.html#marstiming.getUTC">[docs]</a><span class="k">def</span> <span class="nf">getUTC</span><span class="p">(</span><span class="n">jd</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;Get UTC given jd&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;getUTC(jd): Get UTC given jd&#39;&#39;&#39;</span>
 
 	<span class="n">offset</span> <span class="o">=</span> <span class="mf">2440587.5</span> <span class="c">#JD on 1/1/1970 00:00:00 </span>
 
@@ -100,7 +109,7 @@
 
 </div>
 <div class="viewcode-block" id="getJ2000"><a class="viewcode-back" href="../marstiming.html#marstiming.getJ2000">[docs]</a><span class="k">def</span> <span class="nf">getJ2000</span><span class="p">(</span><span class="n">iTime</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;get offset from J2000 epoch.&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;getJ2000(iTime): get offset from J2000 epoch.&#39;&#39;&#39;</span>
 	<span class="n">jd</span> <span class="o">=</span> <span class="n">getJD</span><span class="p">(</span><span class="n">iTime</span><span class="p">)</span>
 	<span class="n">T</span> <span class="o">=</span> <span class="p">(</span><span class="n">jd</span> <span class="o">-</span> <span class="mf">2451545.0</span><span class="p">)</span><span class="o">/</span><span class="mi">36525</span> <span class="k">if</span> <span class="n">iTime</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1972</span> <span class="k">else</span> <span class="mi">0</span>
 
@@ -140,11 +149,10 @@
 	<span class="n">diff</span> <span class="o">=</span> <span class="n">ls</span> <span class="o">-</span> <span class="n">callibration</span>
 	<span class="k">print</span> <span class="n">ls</span>
 	<span class="k">print</span> <span class="s">&#39;Difference = {:f} degrees&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
-<span class="c"># testJ2000()</span>
 </div>
 <div class="viewcode-block" id="getMarsParams"><a class="viewcode-back" href="../marstiming.html#marstiming.getMarsParams">[docs]</a><span class="k">def</span> <span class="nf">getMarsParams</span><span class="p">(</span><span class="n">j2000</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;Mars time parameters</span>
-<span class="sd">	Taken from http://www.giss.nasa.gov/tools/mars24/help/algorithm.html&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;getMarsParams(j2000): Mars time parameters&#39;&#39;&#39;</span>
+	
 	
 	<span class="n">Coefs</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span>
 	<span class="p">[[</span><span class="mf">0.0071</span><span class="p">,</span><span class="mf">2.2353</span><span class="p">,</span><span class="mf">49.409</span><span class="p">],</span>
@@ -174,7 +182,13 @@
 	<span class="k">return</span> <span class="n">M</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">PBS</span><span class="p">,</span> <span class="n">vMinusM</span>
 </div>
 <div class="viewcode-block" id="getMTfromTime"><a class="viewcode-back" href="../marstiming.html#marstiming.getMTfromTime">[docs]</a><span class="k">def</span> <span class="nf">getMTfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;Get LS and Mars time infor given an iTime [y,m,d,h,m,s]&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;getMTfromTime(iTime): Get Mars time information.</span>
+<span class="sd">	</span>
+<span class="sd">	:param iTime: 6 element time list [y,m,d,h,m,s]</span>
+<span class="sd">	:returns: a named tuple containing the LS value as well as </span>
+<span class="sd">	     several parameters necessary for other calculations</span>
+
+<span class="sd">	&#39;&#39;&#39;</span>
 	
 	<span class="n">DPY</span> <span class="o">=</span> <span class="mf">686.9713</span>
 	<span class="n">refTime</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1955</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">56</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="c">#Mars year 1</span>
@@ -206,10 +220,12 @@
 	<span class="k">return</span> <span class="n">d1</span>
 </div>
 <div class="viewcode-block" id="getUTCfromLS"><a class="viewcode-back" href="../marstiming.html#marstiming.getUTCfromLS">[docs]</a><span class="k">def</span> <span class="nf">getUTCfromLS</span><span class="p">(</span><span class="n">marsyear</span><span class="p">,</span><span class="n">LS</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;Get a UTC from a given year and LS.</span>
-<span class="sd">	This starts with an estimate of LS using an orbit angle approximation</span>
-<span class="sd">	then iteratively closes in on the correct LS by incrementing the </span>
-<span class="sd">	day then hour.&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;getUTCfromLS(marsyear,LS): Get a UTC	starting with an estimate of LS using an orbit angle approximation</span>
+<span class="sd">	then iteratively closing in on the correct LS by incrementing the a day first and then hour.</span>
+
+<span class="sd">	:param marsyear: an int mars year</span>
+<span class="sd">	:param ls: ls- mars solar longitude</span>
+<span class="sd">	:returns: UTC1 (python datetime)&#39;&#39;&#39;</span>
 
 	<span class="c">#Get LS to within this value:</span>
 	<span class="n">error</span> <span class="o">=</span> <span class="mf">0.001</span>
@@ -259,7 +275,12 @@
 	<span class="k">return</span> <span class="n">iTime</span>
 </div>
 <div class="viewcode-block" id="getSZAfromTime"><a class="viewcode-back" href="../marstiming.html#marstiming.getSZAfromTime">[docs]</a><span class="k">def</span> <span class="nf">getSZAfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">lat</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;Get SZA from Earth time and Mars coordinates&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;getSZAfromTime(iTime,lon,lat): Get SZA from Earth time and Mars coordinates.</span>
+<span class="sd">	:param iTime a 6 element list: [y,m,d,h,m,s]</span>
+<span class="sd">	:param lon: the longitude in degrees</span>
+<span class="sd">	:param lat: the latitude in degrees</span>
+<span class="sd">	:returns: the solar zenith angle (float)&#39;&#39;&#39;</span>
+
 	<span class="n">timedata</span> <span class="o">=</span> <span class="n">getMTfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">)</span>
 	<span class="n">SZA</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">sin</span><span class="p">(</span><span class="n">timedata</span><span class="o">.</span><span class="n">solarDec</span><span class="o">*</span><span class="n">d2R</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="o">*</span><span class="n">d2R</span><span class="p">)</span><span class="o">+</span>
 		<span class="n">cos</span><span class="p">(</span><span class="n">timedata</span><span class="o">.</span><span class="n">solarDec</span><span class="o">*</span><span class="n">d2R</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="o">*</span><span class="n">d2R</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">((</span><span class="n">lon</span><span class="o">-</span><span class="n">timedata</span><span class="o">.</span><span class="n">subSolarLon</span><span class="p">)</span><span class="o">*</span><span class="n">d2R</span><span class="p">))</span><span class="o">/</span><span class="n">d2R</span>
@@ -278,7 +299,11 @@
 
 </div>
 <div class="viewcode-block" id="getLTfromTime"><a class="viewcode-back" href="../marstiming.html#marstiming.getLTfromTime">[docs]</a><span class="k">def</span> <span class="nf">getLTfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">,</span><span class="n">lon</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;The mars local solar time from an earth time and mars longitude&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;getLTfromTime(iTime,lon): The mars local solar time from an earth time and mars longitude.</span>
+<span class="sd">	</span>
+<span class="sd">	:param iTime: 6 element list: [y,m,d,h,m,s]</span>
+<span class="sd">	:param lon: the longitude in degrees</span>
+<span class="sd">	:returns: The local time (float)&#39;&#39;&#39;</span>
 
 	<span class="n">timedata</span> <span class="o">=</span> <span class="n">getMTfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">)</span>
 	<span class="n">LMST</span> <span class="o">=</span> <span class="n">timedata</span><span class="o">.</span><span class="n">MTC</span><span class="o">-</span><span class="n">lon</span><span class="o">*</span><span class="p">(</span><span class="mi">24</span><span class="o">/</span><span class="mf">360.</span><span class="p">)</span>
@@ -296,8 +321,12 @@
 	<span class="k">print</span> <span class="s">&#39;Difference = {:f} degrees&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LTST</span><span class="o">-</span><span class="n">expected</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="mapSZA"><a class="viewcode-back" href="../marstiming.html#marstiming.mapSZA">[docs]</a><span class="k">def</span> <span class="nf">mapSZA</span><span class="p">(</span><span class="n">iTime</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;Create an SZA map given an Earth time&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;mapSZA(iTime): Create an SZA map given an Earth time</span>
+<span class="sd">	:param iTime: 6 element list: [y,m,d,h,m,s]</span>
+<span class="sd">	:returns: null</span>
+<span class="sd">	&#39;&#39;&#39;</span>
 	<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+	<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
 	
 	<span class="n">nlons</span> <span class="o">=</span> <span class="mi">72</span>
 	<span class="n">nlats</span> <span class="o">=</span> <span class="mi">72</span>
@@ -319,21 +348,7 @@
 	<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s">&#39;Solar Zenith Angle&#39;</span><span class="p">)</span>
 
 	<span class="n">pyplot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;plot.ps&#39;</span><span class="p">)</span>
-
-
-
-</div>
-<span class="n">year</span> <span class="o">=</span> <span class="mi">23</span>
-<span class="n">Ls</span> <span class="o">=</span> <span class="mf">212.5</span>
-<span class="n">iTime</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2014</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">lon</span> <span class="o">=</span> <span class="mi">75</span> 
-<span class="n">lat</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="c"># mapSZA(iTime)</span>
-<span class="k">print</span> <span class="n">getSZAfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">lat</span><span class="p">)</span>
-<span class="n">timing</span><span class="o">=</span><span class="n">getMTfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">)</span>
-<span class="k">print</span> <span class="n">timing</span><span class="o">.</span><span class="n">ls</span>
-<span class="c">#print getUTCfromLS(year,Ls)</span>
-</pre></div>
+</pre></div></div>
 
           </div>
         </div>

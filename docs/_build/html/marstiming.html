@@ -50,62 +50,113 @@
             
   <div class="section" id="module-marstiming">
 <span id="marstiming-module"></span><h1>marstiming module<a class="headerlink" href="#module-marstiming" title="Permalink to this headline">¶</a></h1>
+<p>Mars timing information based on MARS24: <a class="reference external" href="http://www.giss.nasa.gov/tools/mars24/help/algorithm.html">http://www.giss.nasa.gov/tools/mars24/help/algorithm.html</a></p>
+<p>Contains several functions for calculating Mars time parameters from Earth time and vice versa.
+Probably the most useful functions are:
+getMTfromTime: gets mars time data given a 6 element time list
+getSZAfromTime: gets the SZA from a 6 element time list and coordinates
+getLTfromTime: gets the LTST from a 6 element time list and longitude
+getUTCfromLS: Estimates the Earth time from LS and a Mars year</p>
 <dl class="function">
 <dt id="marstiming.getJ2000">
 <tt class="descclassname">marstiming.</tt><tt class="descname">getJ2000</tt><big>(</big><em>iTime</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#getJ2000"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.getJ2000" title="Permalink to this definition">¶</a></dt>
-<dd><p>get offset from J2000 epoch.</p>
+<dd><p>getJ2000(iTime): get offset from J2000 epoch.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="marstiming.getJD">
 <tt class="descclassname">marstiming.</tt><tt class="descname">getJD</tt><big>(</big><em>iTime</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#getJD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.getJD" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the Julian date in seconds</p>
+<dd><p>getJD(iTime): Get the Julian date in seconds</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="marstiming.getLTfromTime">
 <tt class="descclassname">marstiming.</tt><tt class="descname">getLTfromTime</tt><big>(</big><em>iTime</em>, <em>lon</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#getLTfromTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.getLTfromTime" title="Permalink to this definition">¶</a></dt>
-<dd><p>The mars local solar time from an earth time and mars longitude</p>
+<dd><p>getLTfromTime(iTime,lon): The mars local solar time from an earth time and mars longitude.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iTime</strong> &#8211; 6 element list: [y,m,d,h,m,s]</li>
+<li><strong>lon</strong> &#8211; the longitude in degrees</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The local time (float)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="marstiming.getMTfromTime">
 <tt class="descclassname">marstiming.</tt><tt class="descname">getMTfromTime</tt><big>(</big><em>iTime</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#getMTfromTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.getMTfromTime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get LS and Mars time infor given an iTime [y,m,d,h,m,s]</p>
+<dd><p>getMTfromTime(iTime): Get Mars time information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>iTime</strong> &#8211; 6 element time list [y,m,d,h,m,s]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a named tuple containing the LS value as well as 
+several parameters necessary for other calculations</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="marstiming.getMarsParams">
 <tt class="descclassname">marstiming.</tt><tt class="descname">getMarsParams</tt><big>(</big><em>j2000</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#getMarsParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.getMarsParams" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mars time parameters
-Taken from <a class="reference external" href="http://www.giss.nasa.gov/tools/mars24/help/algorithm.html">http://www.giss.nasa.gov/tools/mars24/help/algorithm.html</a></p>
+<dd><p>getMarsParams(j2000): Mars time parameters</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="marstiming.getSZAfromTime">
 <tt class="descclassname">marstiming.</tt><tt class="descname">getSZAfromTime</tt><big>(</big><em>iTime</em>, <em>lon</em>, <em>lat</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#getSZAfromTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.getSZAfromTime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get SZA from Earth time and Mars coordinates</p>
+<dd><p>getSZAfromTime(iTime,lon,lat): Get SZA from Earth time and Mars coordinates.
+:param iTime a 6 element list: [y,m,d,h,m,s]
+:param lon: the longitude in degrees
+:param lat: the latitude in degrees
+:returns: the solar zenith angle (float)</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="marstiming.getUTC">
 <tt class="descclassname">marstiming.</tt><tt class="descname">getUTC</tt><big>(</big><em>jd</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#getUTC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.getUTC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get UTC given jd</p>
+<dd><p>getUTC(jd): Get UTC given jd</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="marstiming.getUTCfromLS">
 <tt class="descclassname">marstiming.</tt><tt class="descname">getUTCfromLS</tt><big>(</big><em>marsyear</em>, <em>LS</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#getUTCfromLS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.getUTCfromLS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a UTC from a given year and LS.
-This starts with an estimate of LS using an orbit angle approximation
-then iteratively closes in on the correct LS by incrementing the 
-day then hour.</p>
+<dd><p>getUTCfromLS(marsyear,LS): Get a UTC    starting with an estimate of LS using an orbit angle approximation
+then iteratively closing in on the correct LS by incrementing the a day first and then hour.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>marsyear</strong> &#8211; an int mars year</li>
+<li><strong>ls</strong> &#8211; ls- mars solar longitude</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">UTC1 (python datetime)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="marstiming.mapSZA">
 <tt class="descclassname">marstiming.</tt><tt class="descname">mapSZA</tt><big>(</big><em>iTime</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#mapSZA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.mapSZA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create an SZA map given an Earth time</p>
+<dd><p>mapSZA(iTime): Create an SZA map given an Earth time
+:param iTime: 6 element list: [y,m,d,h,m,s]
+:returns: null</p>
 </dd></dl>
 
 <dl class="function">
