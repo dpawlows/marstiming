@@ -11,7 +11,7 @@ getUTCfromLS: Estimates the Earth time from LS and a Mars year
 import datetime
 from numpy import pi, floor,array,shape, cos, sin,ceil,arcsin,arccos,arange
 from collections import namedtuple
-from matplotlib import pyplot
+
 
 
 d2R = pi/180.
@@ -266,8 +266,12 @@ def testLTfromTime():
 
 def mapSZA(iTime):
 	'''mapSZA(iTime): Create an SZA map given an Earth time
-	inputs: iTime: 6 element list: [y,m,d,h,m,s]'''
+	inputs: iTime: 6 element list: [y,m,d,h,m,s]
+
+	Requires matplotlib
+	'''
 	import numpy as np
+	from matplotlib import pyplot
 	
 	nlons = 72
 	nlats = 72
