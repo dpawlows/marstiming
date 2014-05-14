@@ -133,9 +133,10 @@ def getMarsParams(j2000):
 	return M, alpha, PBS, vMinusM
 
 def getMTfromTime(iTime):
-	'''getMTfromTime(iTime): Get Mars time information given an iTime: [y,m,d,h,m,s].
+	'''getMTfromTime(iTime): Get Mars time information.
 	
-	Returns a named tuple containing the LS value as well as 
+	:param iTime: 6 element time list [y,m,d,h,m,s]
+	:returns: a named tuple containing the LS value as well as 
 	several parameters necessary for other calculations'''
 	
 	DPY = 686.9713
@@ -168,11 +169,12 @@ def getMTfromTime(iTime):
 	return d1
 
 def getUTCfromLS(marsyear,LS):
-	'''getUTCfromLS(marsyear,LS): Get a UTC from a given mars year and LS.
-	
-	This starts with an estimate of LS using an orbit angle approximation
-	then iteratively closes in on the correct LS by incrementing the 
-	day and then hour.'''
+	'''getUTCfromLS(marsyear,LS): Get a UTC	starting with an estimate of LS using an orbit angle approximation
+	then iteratively closing in on the correct LS by incrementing the a day first and then hour.
+
+	:param marsyear: an int mars year
+	:param ls: ls- mars solar longitude
+	:returns: UTC1 (python datetime)'''
 
 	#Get LS to within this value:
 	error = 0.001
@@ -223,9 +225,11 @@ def getUTCfromLS(marsyear,LS):
 
 def getSZAfromTime(iTime,lon,lat):
 	'''getSZAfromTime(iTime,lon,lat): Get SZA from Earth time and Mars coordinates.
-	inputs: iTime: 6 element list: [y,m,d,h,m,s]
-	        lon: the longitude in degrees
-	        lat: the latitude in degrees'''
+	:param iTime a 6 element list: [y,m,d,h,m,s]
+	:param lon: the longitude in degrees
+	:param lat: the latitude in degrees
+	:returns: the solar zenith angle (float)'''
+
 	timedata = getMTfromTime(iTime)
 	SZA = arccos(sin(timedata.solarDec*d2R)*sin(lat*d2R)+
 		cos(timedata.solarDec*d2R)*cos(lat*d2R)*cos((lon-timedata.subSolarLon)*d2R))/d2R
@@ -246,8 +250,9 @@ def testSZA():
 def getLTfromTime(iTime,lon):
 	'''getLTfromTime(iTime,lon): The mars local solar time from an earth time and mars longitude.
 	
-	inputs: iTime: 6 element list: [y,m,d,h,m,s]
-	lon: the longitude in degrees'''
+	:param iTime: 6 element list: [y,m,d,h,m,s]
+	:param lon: the longitude in degrees
+	:returns: The local time (float)'''
 
 	timedata = getMTfromTime(iTime)
 	LMST = timedata.MTC-lon*(24/360.)
@@ -266,9 +271,8 @@ def testLTfromTime():
 
 def mapSZA(iTime):
 	'''mapSZA(iTime): Create an SZA map given an Earth time
-	inputs: iTime: 6 element list: [y,m,d,h,m,s]
-
-	Requires matplotlib
+	:param iTime: 6 element list: [y,m,d,h,m,s]
+	:returns: null
 	'''
 	import numpy as np
 	from matplotlib import pyplot
