@@ -60,7 +60,7 @@ def getUTC(jd):
 
 
 def getJ2000(iTime):
-	'''get offset from J2000 epoch.'''
+	'''get date in J2000 epoch.'''
 	jd = getJD(iTime)
 	T = (jd - 2451545.0)/36525 if iTime[0] < 1972 else 0
 
@@ -274,7 +274,7 @@ def testLTfromTime():
 
 def mapSZA(iTime):
 	'''Create an SZA map given an Earth time
-	
+
 	:param iTime: 6 element list: [y,m,d,h,m,s]
 	:returns: null
 	'''
