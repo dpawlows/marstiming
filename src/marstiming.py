@@ -17,7 +17,7 @@ from collections import namedtuple
 d2R = pi/180.
 
 def getJD(iTime):
-	'''getJD(iTime): Get the Julian date in seconds'''
+	'''Get the Julian date in seconds'''
 
 	offset = 2440587.5 #JD on 1/1/1970 00:00:00 
 
@@ -43,7 +43,7 @@ def getJD(iTime):
 
 
 def getUTC(jd):
-	'''getUTC(jd): Get UTC given jd'''
+	'''Get UTC given jd'''
 
 	offset = 2440587.5 #JD on 1/1/1970 00:00:00 
 
@@ -60,7 +60,7 @@ def getUTC(jd):
 
 
 def getJ2000(iTime):
-	'''getJ2000(iTime): get offset from J2000 epoch.'''
+	'''get offset from J2000 epoch.'''
 	jd = getJD(iTime)
 	T = (jd - 2451545.0)/36525 if iTime[0] < 1972 else 0
 
@@ -102,7 +102,7 @@ def testLS():
 	print 'Difference = {:f} degrees'.format(diff)
 
 def getMarsParams(j2000):
-	'''getMarsParams(j2000): Mars time parameters'''
+	'''Mars time parameters'''
 	
 	
 	Coefs = array(
@@ -133,7 +133,7 @@ def getMarsParams(j2000):
 	return M, alpha, PBS, vMinusM
 
 def getMTfromTime(iTime):
-	'''getMTfromTime(iTime): Get Mars time information.
+	'''Get Mars time information.
 	
 	:param iTime: 6 element time list [y,m,d,h,m,s]
 	:returns: a named tuple containing the LS value as well as 
@@ -171,7 +171,7 @@ def getMTfromTime(iTime):
 	return d1
 
 def getUTCfromLS(marsyear,LS):
-	'''getUTCfromLS(marsyear,LS): Get a UTC	starting with an estimate of LS using an orbit angle approximation
+	'''Get a UTC starting with an estimate of LS using an orbit angle approximation
 	then iteratively closing in on the correct LS by incrementing the a day first and then hour.
 
 	:param marsyear: an int mars year
@@ -226,7 +226,8 @@ def getUTCfromLS(marsyear,LS):
 	return iTime
 
 def getSZAfromTime(iTime,lon,lat):
-	'''getSZAfromTime(iTime,lon,lat): Get SZA from Earth time and Mars coordinates.
+	'''Get SZA from Earth time and Mars coordinates.
+
 	:param iTime a 6 element list: [y,m,d,h,m,s]
 	:param lon: the longitude in degrees
 	:param lat: the latitude in degrees
@@ -250,7 +251,7 @@ def testSZA():
 
 
 def getLTfromTime(iTime,lon):
-	'''getLTfromTime(iTime,lon): The mars local solar time from an earth time and mars longitude.
+	'''The mars local solar time from an earth time and mars longitude.
 	
 	:param iTime: 6 element list: [y,m,d,h,m,s]
 	:param lon: the longitude in degrees
@@ -272,7 +273,8 @@ def testLTfromTime():
 	print 'Difference = {:f} degrees'.format(LTST-expected)
 
 def mapSZA(iTime):
-	'''mapSZA(iTime): Create an SZA map given an Earth time
+	'''Create an SZA map given an Earth time
+	
 	:param iTime: 6 element list: [y,m,d,h,m,s]
 	:returns: null
 	'''

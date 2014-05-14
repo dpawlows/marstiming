@@ -66,7 +66,7 @@
 <span class="n">d2R</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">180.</span>
 
 <div class="viewcode-block" id="getJD"><a class="viewcode-back" href="../marstiming.html#marstiming.getJD">[docs]</a><span class="k">def</span> <span class="nf">getJD</span><span class="p">(</span><span class="n">iTime</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;getJD(iTime): Get the Julian date in seconds&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;Get the Julian date in seconds&#39;&#39;&#39;</span>
 
 	<span class="n">offset</span> <span class="o">=</span> <span class="mf">2440587.5</span> <span class="c">#JD on 1/1/1970 00:00:00 </span>
 
@@ -92,7 +92,7 @@
 
 </div>
 <div class="viewcode-block" id="getUTC"><a class="viewcode-back" href="../marstiming.html#marstiming.getUTC">[docs]</a><span class="k">def</span> <span class="nf">getUTC</span><span class="p">(</span><span class="n">jd</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;getUTC(jd): Get UTC given jd&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;Get UTC given jd&#39;&#39;&#39;</span>
 
 	<span class="n">offset</span> <span class="o">=</span> <span class="mf">2440587.5</span> <span class="c">#JD on 1/1/1970 00:00:00 </span>
 
@@ -109,7 +109,7 @@
 
 </div>
 <div class="viewcode-block" id="getJ2000"><a class="viewcode-back" href="../marstiming.html#marstiming.getJ2000">[docs]</a><span class="k">def</span> <span class="nf">getJ2000</span><span class="p">(</span><span class="n">iTime</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;getJ2000(iTime): get offset from J2000 epoch.&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;get offset from J2000 epoch.&#39;&#39;&#39;</span>
 	<span class="n">jd</span> <span class="o">=</span> <span class="n">getJD</span><span class="p">(</span><span class="n">iTime</span><span class="p">)</span>
 	<span class="n">T</span> <span class="o">=</span> <span class="p">(</span><span class="n">jd</span> <span class="o">-</span> <span class="mf">2451545.0</span><span class="p">)</span><span class="o">/</span><span class="mi">36525</span> <span class="k">if</span> <span class="n">iTime</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1972</span> <span class="k">else</span> <span class="mi">0</span>
 
@@ -151,7 +151,7 @@
 	<span class="k">print</span> <span class="s">&#39;Difference = {:f} degrees&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="getMarsParams"><a class="viewcode-back" href="../marstiming.html#marstiming.getMarsParams">[docs]</a><span class="k">def</span> <span class="nf">getMarsParams</span><span class="p">(</span><span class="n">j2000</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;getMarsParams(j2000): Mars time parameters&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;Mars time parameters&#39;&#39;&#39;</span>
 	
 	
 	<span class="n">Coefs</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span>
@@ -182,7 +182,7 @@
 	<span class="k">return</span> <span class="n">M</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">PBS</span><span class="p">,</span> <span class="n">vMinusM</span>
 </div>
 <div class="viewcode-block" id="getMTfromTime"><a class="viewcode-back" href="../marstiming.html#marstiming.getMTfromTime">[docs]</a><span class="k">def</span> <span class="nf">getMTfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;getMTfromTime(iTime): Get Mars time information.</span>
+	<span class="sd">&#39;&#39;&#39;Get Mars time information.</span>
 <span class="sd">	</span>
 <span class="sd">	:param iTime: 6 element time list [y,m,d,h,m,s]</span>
 <span class="sd">	:returns: a named tuple containing the LS value as well as </span>
@@ -220,7 +220,7 @@
 	<span class="k">return</span> <span class="n">d1</span>
 </div>
 <div class="viewcode-block" id="getUTCfromLS"><a class="viewcode-back" href="../marstiming.html#marstiming.getUTCfromLS">[docs]</a><span class="k">def</span> <span class="nf">getUTCfromLS</span><span class="p">(</span><span class="n">marsyear</span><span class="p">,</span><span class="n">LS</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;getUTCfromLS(marsyear,LS): Get a UTC	starting with an estimate of LS using an orbit angle approximation</span>
+	<span class="sd">&#39;&#39;&#39;Get a UTC starting with an estimate of LS using an orbit angle approximation</span>
 <span class="sd">	then iteratively closing in on the correct LS by incrementing the a day first and then hour.</span>
 
 <span class="sd">	:param marsyear: an int mars year</span>
@@ -275,7 +275,8 @@
 	<span class="k">return</span> <span class="n">iTime</span>
 </div>
 <div class="viewcode-block" id="getSZAfromTime"><a class="viewcode-back" href="../marstiming.html#marstiming.getSZAfromTime">[docs]</a><span class="k">def</span> <span class="nf">getSZAfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">lat</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;getSZAfromTime(iTime,lon,lat): Get SZA from Earth time and Mars coordinates.</span>
+	<span class="sd">&#39;&#39;&#39;Get SZA from Earth time and Mars coordinates.</span>
+
 <span class="sd">	:param iTime a 6 element list: [y,m,d,h,m,s]</span>
 <span class="sd">	:param lon: the longitude in degrees</span>
 <span class="sd">	:param lat: the latitude in degrees</span>
@@ -299,7 +300,7 @@
 
 </div>
 <div class="viewcode-block" id="getLTfromTime"><a class="viewcode-back" href="../marstiming.html#marstiming.getLTfromTime">[docs]</a><span class="k">def</span> <span class="nf">getLTfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">,</span><span class="n">lon</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;getLTfromTime(iTime,lon): The mars local solar time from an earth time and mars longitude.</span>
+	<span class="sd">&#39;&#39;&#39;The mars local solar time from an earth time and mars longitude.</span>
 <span class="sd">	</span>
 <span class="sd">	:param iTime: 6 element list: [y,m,d,h,m,s]</span>
 <span class="sd">	:param lon: the longitude in degrees</span>
@@ -321,7 +322,8 @@
 	<span class="k">print</span> <span class="s">&#39;Difference = {:f} degrees&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LTST</span><span class="o">-</span><span class="n">expected</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="mapSZA"><a class="viewcode-back" href="../marstiming.html#marstiming.mapSZA">[docs]</a><span class="k">def</span> <span class="nf">mapSZA</span><span class="p">(</span><span class="n">iTime</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;mapSZA(iTime): Create an SZA map given an Earth time</span>
+	<span class="sd">&#39;&#39;&#39;Create an SZA map given an Earth time</span>
+<span class="sd">	</span>
 <span class="sd">	:param iTime: 6 element list: [y,m,d,h,m,s]</span>
 <span class="sd">	:returns: null</span>
 <span class="sd">	&#39;&#39;&#39;</span>
