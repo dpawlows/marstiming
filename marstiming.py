@@ -1,14 +1,23 @@
-#!/usr/bin/python
+'''Mars timing information based on MARS24: http://www.giss.nasa.gov/tools/mars24/help/algorithm.html
+
+Contains several functions for calculating Mars time parameters from Earth time and vice versa.
+Probably the most useful functions are:
+getMTfromTime: gets mars time data given a 6 element time list
+getSZAfromTime: gets the SZA from a 6 element time list and coordinates
+getLTfromTime: gets the LTST from a 6 element time list and longitude
+getUTCfromLS: Estimates the Earth time from LS and a Mars year
+'''
+
 import datetime
 from numpy import pi, floor,array,shape, cos, sin,ceil,arcsin,arccos,arange
 from collections import namedtuple
-from pdb import set_trace
 from matplotlib import pyplot
+
 
 d2R = pi/180.
 
 def getJD(iTime):
-	'''Get the Julian date in seconds'''
+	'''getJD(iTime): Get the Julian date in seconds'''
 
 	offset = 2440587.5 #JD on 1/1/1970 00:00:00 
 
@@ -34,7 +43,7 @@ def getJD(iTime):
 
 
 def getUTC(jd):
-	'''Get UTC given jd'''
+	'''getUTC(jd): Get UTC given jd'''
 
 	offset = 2440587.5 #JD on 1/1/1970 00:00:00 
 
@@ -51,7 +60,7 @@ def getUTC(jd):
 
 
 def getJ2000(iTime):
-	'''get offset from J2000 epoch.'''
+	'''getJ2000(iTime): get offset from J2000 epoch.'''
 	jd = getJD(iTime)
 	T = (jd - 2451545.0)/36525 if iTime[0] < 1972 else 0
 
@@ -91,11 +100,10 @@ def testLS():
 	diff = ls - callibration
 	print ls
 	print 'Difference = {:f} degrees'.format(diff)
-# testJ2000()
 
 def getMarsParams(j2000):
-	'''Mars time parameters
-	Taken from http://www.giss.nasa.gov/tools/mars24/help/algorithm.html'''
+	'''getMarsParams(j2000): Mars time parameters'''
+	
 	
 	Coefs = array(
 	[[0.0071,2.2353,49.409],
@@ -125,7 +133,10 @@ def getMarsParams(j2000):
 	return M, alpha, PBS, vMinusM
 
 def getMTfromTime(iTime):
-	'''Get LS and Mars time infor given an iTime [y,m,d,h,m,s]'''
+	'''getMTfromTime(iTime): Get Mars time information given an iTime: [y,m,d,h,m,s].
+	
+	Returns a named tuple containing the LS value as well as 
+	several parameters necessary for other calculations'''
 	
 	DPY = 686.9713
 	refTime = [1955,4,11,10,56,0] #Mars year 1
@@ -157,10 +168,11 @@ def getMTfromTime(iTime):
 	return d1
 
 def getUTCfromLS(marsyear,LS):
-	'''Get a UTC from a given year and LS.
+	'''getUTCfromLS(marsyear,LS): Get a UTC from a given mars year and LS.
+	
 	This starts with an estimate of LS using an orbit angle approximation
 	then iteratively closes in on the correct LS by incrementing the 
-	day then hour.'''
+	day and then hour.'''
 
 	#Get LS to within this value:
 	error = 0.001
@@ -210,7 +222,10 @@ def getUTCfromLS(marsyear,LS):
 	return iTime
 
 def getSZAfromTime(iTime,lon,lat):
-	'''Get SZA from Earth time and Mars coordinates'''
+	'''getSZAfromTime(iTime,lon,lat): Get SZA from Earth time and Mars coordinates.
+	inputs: iTime: 6 element list: [y,m,d,h,m,s]
+	        lon: the longitude in degrees
+	        lat: the latitude in degrees'''
 	timedata = getMTfromTime(iTime)
 	SZA = arccos(sin(timedata.solarDec*d2R)*sin(lat*d2R)+
 		cos(timedata.solarDec*d2R)*cos(lat*d2R)*cos((lon-timedata.subSolarLon)*d2R))/d2R
@@ -229,7 +244,10 @@ def testSZA():
 
 
 def getLTfromTime(iTime,lon):
-	'''The mars local solar time from an earth time and mars longitude'''
+	'''getLTfromTime(iTime,lon): The mars local solar time from an earth time and mars longitude.
+	
+	inputs: iTime: 6 element list: [y,m,d,h,m,s]
+	lon: the longitude in degrees'''
 
 	timedata = getMTfromTime(iTime)
 	LMST = timedata.MTC-lon*(24/360.)
@@ -247,7 +265,8 @@ def testLTfromTime():
 	print 'Difference = {:f} degrees'.format(LTST-expected)
 
 def mapSZA(iTime):
-	'''Create an SZA map given an Earth time'''
+	'''mapSZA(iTime): Create an SZA map given an Earth time
+	inputs: iTime: 6 element list: [y,m,d,h,m,s]'''
 	import numpy as np
 	
 	nlons = 72
@@ -273,16 +292,5 @@ def mapSZA(iTime):
 
 
 
-
-year = 23
-Ls = 212.5
-iTime = [2014,10,19,0,0,0]
-lon = 75 
-lat = 0
-# mapSZA(iTime)
-print getSZAfromTime(iTime,lon,lat)
-timing=getMTfromTime(iTime)
-print timing.ls
-#print getUTCfromLS(year,Ls)
 
 
