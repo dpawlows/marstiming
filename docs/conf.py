@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# src documentation build configuration file, created by
+# marstiming documentation build configuration file, created by
 # sphinx-quickstart on Wed May 14 11:17:40 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -179,7 +179,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'srcdoc'
+htmlhelp_basename = 'marstimingdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -199,7 +199,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'src.tex', u'src Documentation',
+  ('index', 'marstiming.tex', u'marstiming Documentation',
    u'Dave Pawlowski', 'manual'),
 ]
 
@@ -229,7 +229,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'src', u'src Documentation',
+    ('index', 'marstiming', u'marstiming Documentation',
      [u'Dave Pawlowski'], 1)
 ]
 
@@ -243,8 +243,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'src', u'src Documentation',
-   u'Dave Pawlowski', 'src', 'One line description of project.',
+  ('index', 'marstiming', u'marstiming Documentation',
+   u'Dave Pawlowski', 'marstiming', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -264,13 +264,13 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'src'
+epub_title = u'marstiming'
 epub_author = u'Dave Pawlowski'
 epub_publisher = u'Dave Pawlowski'
 epub_copyright = u'2014, Dave Pawlowski'
 
 # The basename for the epub file. It defaults to the project name.
-#epub_basename = u'src'
+#epub_basename = u'marstiming'
 
 # The HTML theme for the epub output. Since the default themes are not optimized
 # for small screen space, using the same theme for HTML and epub output is
