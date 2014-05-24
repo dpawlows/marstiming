@@ -295,13 +295,17 @@ def mapSZA(iTime):
 	pyplot.figure()
 	pyplot.xlabel('Longitude')
 	pyplot.ylabel('Latitude')
-	cont = pyplot.contourf(longitude,latitude,SZA,30,cmap='gist_rainbow')
-	
+	levels = [0,90,180]
+	cont = pyplot.contourf(longitude,latitude,SZA,30,
+		cmap=pyplot.cm.gist_rainbow)
+	cont2 = pyplot.contour(longitude,latitude,SZA,levels,
+		linewidths=(2,),colors='black',
+		linestyles=('--'))
+	pyplot.clabel(cont2, fmt = '%2.1f', colors = 'black', fontsize=11)
 	cb = pyplot.colorbar(cont)
 	cb.set_label('Solar Zenith Angle')
 
 	pyplot.savefig('plot.ps')
-
 
 
 
