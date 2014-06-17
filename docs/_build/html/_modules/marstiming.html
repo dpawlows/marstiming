@@ -58,7 +58,7 @@
 <span class="sd">&#39;&#39;&#39;</span>
 
 <span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span><span class="n">array</span><span class="p">,</span><span class="n">shape</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span><span class="n">ceil</span><span class="p">,</span><span class="n">arcsin</span><span class="p">,</span><span class="n">arccos</span><span class="p">,</span><span class="n">arange</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span><span class="n">array</span><span class="p">,</span><span class="n">shape</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span><span class="n">ceil</span><span class="p">,</span><span class="n">arcsin</span><span class="p">,</span><span class="n">arccos</span><span class="p">,</span><span class="n">arange</span><span class="p">,</span><span class="nb">abs</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 
 
@@ -109,7 +109,7 @@
 
 </div>
 <div class="viewcode-block" id="getJ2000"><a class="viewcode-back" href="../marstiming.html#marstiming.getJ2000">[docs]</a><span class="k">def</span> <span class="nf">getJ2000</span><span class="p">(</span><span class="n">iTime</span><span class="p">):</span>
-	<span class="sd">&#39;&#39;&#39;get offset from J2000 epoch.&#39;&#39;&#39;</span>
+	<span class="sd">&#39;&#39;&#39;get date in J2000 epoch.&#39;&#39;&#39;</span>
 	<span class="n">jd</span> <span class="o">=</span> <span class="n">getJD</span><span class="p">(</span><span class="n">iTime</span><span class="p">)</span>
 	<span class="n">T</span> <span class="o">=</span> <span class="p">(</span><span class="n">jd</span> <span class="o">-</span> <span class="mf">2451545.0</span><span class="p">)</span><span class="o">/</span><span class="mi">36525</span> <span class="k">if</span> <span class="n">iTime</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1972</span> <span class="k">else</span> <span class="mi">0</span>
 
@@ -274,19 +274,63 @@
 
 	<span class="k">return</span> <span class="n">iTime</span>
 </div>
-<div class="viewcode-block" id="getSZAfromTime"><a class="viewcode-back" href="../marstiming.html#marstiming.getSZAfromTime">[docs]</a><span class="k">def</span> <span class="nf">getSZAfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">lat</span><span class="p">):</span>
+<div class="viewcode-block" id="getSZAfromTime"><a class="viewcode-back" href="../marstiming.html#marstiming.getSZAfromTime">[docs]</a><span class="k">def</span> <span class="nf">getSZAfromTime</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">lat</span><span class="p">):</span>
 	<span class="sd">&#39;&#39;&#39;Get SZA from Earth time and Mars coordinates.</span>
 
-<span class="sd">	:param iTime a 6 element list: [y,m,d,h,m,s]</span>
+<span class="sd">	:param the time: [y,m,d,h,m,s] or datetime object</span>
 <span class="sd">	:param lon: the longitude in degrees</span>
 <span class="sd">	:param lat: the latitude in degrees</span>
 <span class="sd">	:returns: the solar zenith angle (float)&#39;&#39;&#39;</span>
 
-	<span class="n">timedata</span> <span class="o">=</span> <span class="n">getMTfromTime</span><span class="p">(</span><span class="n">iTime</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">==</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
+		<span class="n">time</span> <span class="o">=</span> <span class="p">[</span><span class="n">time</span><span class="o">.</span><span class="n">year</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">month</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">day</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">second</span><span class="p">]</span>
+
+	<span class="n">timedata</span> <span class="o">=</span> <span class="n">getMTfromTime</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+
 	<span class="n">SZA</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">sin</span><span class="p">(</span><span class="n">timedata</span><span class="o">.</span><span class="n">solarDec</span><span class="o">*</span><span class="n">d2R</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="o">*</span><span class="n">d2R</span><span class="p">)</span><span class="o">+</span>
 		<span class="n">cos</span><span class="p">(</span><span class="n">timedata</span><span class="o">.</span><span class="n">solarDec</span><span class="o">*</span><span class="n">d2R</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="o">*</span><span class="n">d2R</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">((</span><span class="n">lon</span><span class="o">-</span><span class="n">timedata</span><span class="o">.</span><span class="n">subSolarLon</span><span class="p">)</span><span class="o">*</span><span class="n">d2R</span><span class="p">))</span><span class="o">/</span><span class="n">d2R</span>
 
 	<span class="k">return</span> <span class="n">SZA</span>
+</div>
+<div class="viewcode-block" id="SZAGetTime"><a class="viewcode-back" href="../marstiming.html#marstiming.SZAGetTime">[docs]</a><span class="k">def</span> <span class="nf">SZAGetTime</span><span class="p">(</span><span class="n">sza</span><span class="p">,</span><span class="n">date</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Find the time on a given date and location when the SZA is a given value.</span>
+
+<span class="sd">	:param sza: Solar zenith angle in degrees</span>
+<span class="sd">	:param date: [y,m,d]&lt;</span>
+<span class="sd">	:param lon: the longitude in degrees</span>
+<span class="sd">	:param lat: the latitude in degrees</span>
+<span class="sd">	:returns: A python datetime object</span>
+<span class="sd">	&#39;&#39;&#39;</span>
+	<span class="n">thisDate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">date</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">date</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">date</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+
+	<span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="n">error</span> <span class="o">=</span> <span class="mi">1</span>
+	<span class="n">factor</span> <span class="o">=</span> <span class="mi">1</span>
+	<span class="n">dt</span> <span class="o">=</span> <span class="mi">15</span> <span class="c">#minutes</span>
+	<span class="n">thisSza</span> <span class="o">=</span> <span class="n">getSZAfromTime</span><span class="p">(</span><span class="n">thisDate</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">lat</span><span class="p">)</span>
+	<span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">thisSza</span> <span class="o">-</span> <span class="n">sza</span><span class="p">)</span>
+	<span class="k">while</span> <span class="n">diff</span> <span class="o">&gt;</span> <span class="n">error</span><span class="p">:</span>
+		<span class="n">thisDate</span> <span class="o">+=</span> <span class="n">factor</span><span class="o">*</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+		<span class="n">thisSza</span> <span class="o">=</span> <span class="n">getSZAfromTime</span><span class="p">(</span><span class="n">thisDate</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">lat</span><span class="p">)</span>
+		<span class="n">newdiff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">thisSza</span> <span class="o">-</span> <span class="n">sza</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">newdiff</span> <span class="o">&gt;</span> <span class="n">diff</span><span class="p">:</span>
+			<span class="n">factor</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">factor</span> 
+			<span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+			<span class="k">if</span> <span class="n">counter</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c">#Wait until counter is &gt; 1 in case we start off going the wrong way!</span>
+				<span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">/</span><span class="mf">2.</span>
+		
+		<span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+		<span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">diff</span> <span class="o">-</span> <span class="n">newdiff</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span> <span class="o">&lt;</span> <span class="n">error</span> <span class="ow">and</span> <span class="n">counter</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>	
+			<span class="k">print</span> <span class="s">&#39;this location doesnt reach the given SZA.  Returning closest value... {:f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">thisSza</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">thisDate</span><span class="p">,</span> <span class="n">thisSza</span>
+
+		<span class="n">diff</span> <span class="o">=</span> <span class="n">newdiff</span>
+
+	<span class="k">return</span> <span class="n">thisDate</span><span class="p">,</span> <span class="n">thisSza</span>
+
 </div>
 <div class="viewcode-block" id="testSZA"><a class="viewcode-back" href="../marstiming.html#marstiming.testSZA">[docs]</a><span class="k">def</span> <span class="nf">testSZA</span><span class="p">():</span>
 	<span class="sd">&#39;&#39;&#39;test getSZAfromTime&#39;&#39;&#39;</span>
@@ -323,7 +367,7 @@
 </div>
 <div class="viewcode-block" id="mapSZA"><a class="viewcode-back" href="../marstiming.html#marstiming.mapSZA">[docs]</a><span class="k">def</span> <span class="nf">mapSZA</span><span class="p">(</span><span class="n">iTime</span><span class="p">):</span>
 	<span class="sd">&#39;&#39;&#39;Create an SZA map given an Earth time</span>
-<span class="sd">	</span>
+
 <span class="sd">	:param iTime: 6 element list: [y,m,d,h,m,s]</span>
 <span class="sd">	:returns: null</span>
 <span class="sd">	&#39;&#39;&#39;</span>
@@ -344,8 +388,13 @@
 	<span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 	<span class="n">pyplot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Longitude&#39;</span><span class="p">)</span>
 	<span class="n">pyplot</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Latitude&#39;</span><span class="p">)</span>
-	<span class="n">cont</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">longitude</span><span class="p">,</span><span class="n">latitude</span><span class="p">,</span><span class="n">SZA</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="s">&#39;gist_rainbow&#39;</span><span class="p">)</span>
-	
+	<span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">90</span><span class="p">,</span><span class="mi">180</span><span class="p">]</span>
+	<span class="n">cont</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">longitude</span><span class="p">,</span><span class="n">latitude</span><span class="p">,</span><span class="n">SZA</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span>
+		<span class="n">cmap</span><span class="o">=</span><span class="n">pyplot</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gist_rainbow</span><span class="p">)</span>
+	<span class="n">cont2</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">longitude</span><span class="p">,</span><span class="n">latitude</span><span class="p">,</span><span class="n">SZA</span><span class="p">,</span><span class="n">levels</span><span class="p">,</span>
+		<span class="n">linewidths</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,),</span><span class="n">colors</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">,</span>
+		<span class="n">linestyles</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;--&#39;</span><span class="p">))</span>
+	<span class="n">pyplot</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cont2</span><span class="p">,</span> <span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%2.1f</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">colors</span> <span class="o">=</span> <span class="s">&#39;black&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
 	<span class="n">cb</span> <span class="o">=</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span>
 	<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s">&#39;Solar Zenith Angle&#39;</span><span class="p">)</span>
 
