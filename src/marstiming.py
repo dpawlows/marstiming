@@ -9,7 +9,7 @@ getUTCfromLS: Estimates the Earth time from LS and a Mars year
 '''
 
 import datetime
-from numpy import pi, floor,array,shape, cos, sin,ceil,arcsin,arccos,arange
+from numpy import pi, floor,array,shape, cos, sin,ceil,arcsin,arccos,arange,abs
 from collections import namedtuple
 
 
@@ -225,19 +225,63 @@ def getUTCfromLS(marsyear,LS):
 
 	return iTime
 
-def getSZAfromTime(iTime,lon,lat):
+def getSZAfromTime(time,lon,lat):
 	'''Get SZA from Earth time and Mars coordinates.
 
-	:param iTime a 6 element list: [y,m,d,h,m,s]
+	:param the time: [y,m,d,h,m,s] or datetime object
 	:param lon: the longitude in degrees
 	:param lat: the latitude in degrees
 	:returns: the solar zenith angle (float)'''
 
-	timedata = getMTfromTime(iTime)
+
+	if type(time) == datetime.datetime:
+		time = [time.year,time.month,time.day,time.hour,time.minute,time.second]
+
+	timedata = getMTfromTime(time)
+
 	SZA = arccos(sin(timedata.solarDec*d2R)*sin(lat*d2R)+
 		cos(timedata.solarDec*d2R)*cos(lat*d2R)*cos((lon-timedata.subSolarLon)*d2R))/d2R
 
 	return SZA
+
+def SZAGetTime(sza,date, lon, lat):
+	'''Find the time on a given date and location when the SZA is a given value.
+
+	:param sza: Solar zenith angle in degrees
+	:param date: [y,m,d]<
+	:param lon: the longitude in degrees
+	:param lat: the latitude in degrees
+	:returns: A python datetime object
+	'''
+	thisDate = datetime.datetime(date[0],date[1],date[2])
+
+
+	count = 0
+	counter = 0
+	error = 1
+	factor = 1
+	dt = 15 #minutes
+	thisSza = getSZAfromTime(thisDate,lon,lat)
+	diff = abs(thisSza - sza)
+	while diff > error:
+		thisDate += factor*datetime.timedelta(minutes=dt)
+		thisSza = getSZAfromTime(thisDate,lon,lat)
+		newdiff = abs(thisSza - sza)
+		if newdiff > diff:
+			factor = -1*factor 
+			counter += 1
+			if counter > 1:  #Wait until counter is > 1 in case we start off going the wrong way!
+				dt = dt/2.
+		
+		count += 1
+		if abs(diff - newdiff)/2. < error and counter > 5:	
+			print 'this location doesnt reach the given SZA.  Returning closest value... {:f}'.format(thisSza)
+			return thisDate, thisSza
+
+		diff = newdiff
+
+	return thisDate, thisSza
+
 
 def testSZA():
 	'''test getSZAfromTime'''
