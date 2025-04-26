@@ -11,7 +11,6 @@ getUTCfromLS: Estimates the Earth time from LS and a Mars year
 import datetime
 import numpy as np
 from collections import namedtuple
-import taiutc
 from astroquery.jplhorizons import Horizons
 from astropy.utils import iers
 import astropy.time as aptime
