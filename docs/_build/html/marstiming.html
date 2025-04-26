@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="marstiming  documentation" href="index.html" />
-    <link rel="prev" title="Welcome to marstiming’s documentation!" href="index.html" /> 
+    <link rel="prev" title="Welcome to src’s documentation!" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,7 +37,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to marstiming’s documentation!"
+          <a href="index.html" title="Welcome to src’s documentation!"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">marstiming  documentation</a> &raquo;</li> 
       </ul>
@@ -58,32 +58,9 @@ getSZAfromTime: gets the SZA from a 6 element time list and coordinates
 getLTfromTime: gets the LTST from a 6 element time list and longitude
 getUTCfromLS: Estimates the Earth time from LS and a Mars year</p>
 <dl class="function">
-<dt id="marstiming.SZAGetTime">
-<tt class="descclassname">marstiming.</tt><tt class="descname">SZAGetTime</tt><big>(</big><em>sza</em>, <em>date</em>, <em>lon</em>, <em>lat</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#SZAGetTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.SZAGetTime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the time on a given date and location when the SZA is a given value.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sza</strong> &#8211; Solar zenith angle in degrees</li>
-<li><strong>date</strong> &#8211; [y,m,d]&lt;</li>
-<li><strong>lon</strong> &#8211; the longitude in degrees</li>
-<li><strong>lat</strong> &#8211; the latitude in degrees</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A python datetime object</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
 <dt id="marstiming.getJ2000">
 <tt class="descclassname">marstiming.</tt><tt class="descname">getJ2000</tt><big>(</big><em>iTime</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#getJ2000"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.getJ2000" title="Permalink to this definition">¶</a></dt>
-<dd><p>get date in J2000 epoch.</p>
+<dd><p>get offset from J2000 epoch.</p>
 </dd></dl>
 
 <dl class="function">
@@ -138,14 +115,14 @@ several parameters necessary for other calculations</td>
 
 <dl class="function">
 <dt id="marstiming.getSZAfromTime">
-<tt class="descclassname">marstiming.</tt><tt class="descname">getSZAfromTime</tt><big>(</big><em>time</em>, <em>lon</em>, <em>lat</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#getSZAfromTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.getSZAfromTime" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">marstiming.</tt><tt class="descname">getSZAfromTime</tt><big>(</big><em>iTime</em>, <em>lon</em>, <em>lat</em><big>)</big><a class="reference internal" href="_modules/marstiming.html#getSZAfromTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marstiming.getSZAfromTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get SZA from Earth time and Mars coordinates.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>time</strong> (<em>the</em>) &#8211; [y,m,d,h,m,s] or datetime object</li>
+<li><strong>a 6 element list</strong> (<em>iTime</em>) &#8211; [y,m,d,h,m,s]</li>
 <li><strong>lon</strong> &#8211; the longitude in degrees</li>
 <li><strong>lat</strong> &#8211; the latitude in degrees</li>
 </ul>
@@ -239,7 +216,7 @@ then iteratively closing in on the correct LS by incrementing the a day first an
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to marstiming&#8217;s documentation!</a></p>
+                        title="previous chapter">Welcome to src&#8217;s documentation!</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/marstiming.txt"
@@ -272,7 +249,7 @@ then iteratively closing in on the correct LS by incrementing the a day first an
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to marstiming’s documentation!"
+          <a href="index.html" title="Welcome to src’s documentation!"
              >previous</a> |</li>
         <li><a href="index.html">marstiming  documentation</a> &raquo;</li> 
       </ul>
