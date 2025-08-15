@@ -14,7 +14,6 @@ from collections import namedtuple
 from astroquery.jplhorizons import Horizons
 from astropy.utils import iers
 import astropy.time as aptime
-import spiceypy as spice
 import os
 from matplotlib import pyplot as pp 
 
@@ -76,6 +75,7 @@ def getMarsSolarGeometry(iTime):
 		iTime = [iTime.year, iTime.month, iTime.day, iTime.hour, iTime.minute, iTime.second]
 	
 	DPY = 686.9713
+	MSD_per_day = 1.027491252
 
 	# Establish a reference
 	refTime = [1955,4,11,10,56,0] #Mars year 1
@@ -111,11 +111,14 @@ def getMarsSolarGeometry(iTime):
 	   #we always use deg E
 	   
 	solarDec = (np.arcsin(0.42565*np.sin(LS*d2R))/d2R+0.25*np.sin(LS*d2R))
-	sol = ((tt.jd - 2451549.5) / 1.027491252) % 1
-	data = namedtuple('data','datetime ls year sol M alpha PBS vMinusM MTC EOT subSolarLon solarDec')
-	d1 = data(datetime=time, ls = LS,year=year,sol=sol,M=M,alpha=alpha,PBS=PBS,vMinusM=vMinusM,MTC=MTC,EOT=EOT,
-		subSolarLon=subSolarLon,solarDec=solarDec)
+	sol = ((tt.jd - rDate) / MSD_per_day) #Uses start of Mars year 1 as epoch
+	sol_in_year = sol %  668.5991 #nsols per mars year
+	if sol_in_year < 0:
+	    sol_in_year += 668.5991 # just in case we start before Mars epoch
 
+	data = namedtuple('data','datetime ls year sol M alpha PBS vMinusM MTC EOT subSolarLon solarDec')
+	d1 = data(datetime=time, ls = LS,year=year,sol=sol_in_year,M=M,alpha=alpha,PBS=PBS,vMinusM=vMinusM,MTC=MTC,EOT=EOT,
+		subSolarLon=subSolarLon,solarDec=solarDec)
 
 	return d1
 
@@ -262,10 +265,11 @@ def getLTfromTime(iTime,lon):
 	:returns: The local time (float)'''
 
 	timedata = getMarsSolarGeometry(iTime)
-	LMST = timedata.MTC-lon*(24/360.)
-	LTST = LMST + timedata.EOT*(24/360.)
+	lon = np.asarray(lon)  # convert to array if not already (safe for scalars too)
+	LMST = timedata.MTC - lon * (24 / 360.)
+	LTST = LMST + timedata.EOT * (24 / 360.)
 
-	return LTST
+	return LTST % 24
 
 
 def mapSZA(iTime,nlons=360,nlats=180,savefile="sza_map.png"):
@@ -315,7 +319,7 @@ def mapSZA(iTime,nlons=360,nlats=180,savefile="sza_map.png"):
 if __name__ == "__main__":
 	# itime = [2000,1,6,0,0,0]
 	itime = [2004,1,4,13,46,31] #Mars24 examples for testing
-	itime = [2000,1,23,13,3,9]
+	itime = [2000,5,30,23,29,49]
 	# testSZA()
 	# print(getSZAfromTime(itime,360-184.7,-14.64))
 	mapSZA(itime)
