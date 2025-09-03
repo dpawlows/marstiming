@@ -3,9 +3,11 @@
 Contains several functions for calculating Mars time parameters from Earth time and vice versa.
 Probably the most useful functions are:
 getMarsSolarGeometry: gets mars time data given a 6 element time list
-getSZAfromTime: gets the SZA from a 6 element time list and coordinates
-getLTfromTime: gets the LTST from a 6 element time list and longitude
+getSZAfromTime: gets the SZA from MarsSolarGeometry data
+getLTfromTime: gets the LTST from MarsSolarGeometry data
 getUTCfromLS: Estimates the Earth time from LS and a Mars year
+
+Note: Mars24 uses West lons, but this code has been modified to use East
 '''
 
 import datetime
@@ -239,7 +241,8 @@ def SZAGetTime(sza,date, lon, lat):
 	diff = np.abs(thisSza - sza)
 	while diff > error:
 		thisDate += factor*datetime.timedelta(minutes=dt)
-		thisSza = getSZAfromTime(thisDate,lon,lat)
+		timedata = getMarsSolarGeometry(thisDate)
+		thisSza = getSZAfromTime(timedata,lon,lat)
 		newdiff = np.abs(thisSza - sza)
 		if newdiff > diff:
 			factor = -1*factor
@@ -257,16 +260,18 @@ def SZAGetTime(sza,date, lon, lat):
 	return thisDate, thisSza
 
 
-def getLTfromTime(iTime,lon):
+def getLTfromTime(timedata,lon):
 	'''The mars local solar time from an earth time and mars longitude.
 
-	:param iTime: 6 element list: [y,m,d,h,m,s]
-	:param lon: the longitude in degrees
+	:param timedata: output from getMarsSolarGeometry
+	:param lon: the EAST!!!! longitude in degrees
 	:returns: The local time (float)'''
 
-	timedata = getMarsSolarGeometry(iTime)
+
 	lon = np.asarray(lon)  # convert to array if not already (safe for scalars too)
-	LMST = timedata.MTC - lon * (24 / 360.)
+	lon_e = np.mod(lon, 360.0)
+
+	LMST = timedata.MTC + lon_e * (24 / 360.)
 	LTST = LMST + timedata.EOT * (24 / 360.)
 
 	return LTST % 24
@@ -317,6 +322,8 @@ def mapSZA(iTime,nlons=360,nlats=180,savefile="sza_map.png"):
 
 
 if __name__ == "__main__":
+
+	#Careful with the testing. I think in Mars24, they use W longitudes for some reason. 
 	# itime = [2000,1,6,0,0,0]
 	itime = [2004,1,4,13,46,31] #Mars24 examples for testing
 	itime = [2000,5,30,23,29,49]
