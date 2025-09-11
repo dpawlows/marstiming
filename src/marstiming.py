@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''Mars timing information based on MARS24: http://www.giss.nasa.gov/tools/mars24/help/algorithm.html
 
 Contains several functions for calculating Mars time parameters from Earth time and vice versa.
@@ -18,6 +19,7 @@ from astropy.utils import iers
 import astropy.time as aptime
 import os
 from matplotlib import pyplot as pp 
+import argparse
 
 # Path to the manually downloaded IERS-A file needed for correct leap seconds
 module_dir = os.path.dirname(__file__)
@@ -321,15 +323,37 @@ def mapSZA(iTime,nlons=360,nlats=180,savefile="sza_map.png"):
 	print(f"Grid resolution: {nlons} x {nlats}")
 
 
-if __name__ == "__main__":
+def parse_time(timestr):
+    """
+    Parse an ISO-like timestamp (YYYY-MM-DDTHH:MM:SS) into [Y,M,D,H,M,S].
+    Seconds are optional.
+    """
+    try:
+        dt = datetime.datetime.strptime(timestr, "%Y-%m-%dT%H:%M:%S")
+    except ValueError:
+        dt = datetime.datetime.strptime(timestr, "%Y-%m-%dT%H:%M")  # allow no seconds
+    return [dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second]
 
-	#Careful with the testing. I think in Mars24, they use W longitudes for some reason. 
-	# itime = [2000,1,6,0,0,0]
-	itime = [2004,1,4,13,46,31] #Mars24 examples for testing
-	itime = [2000,5,30,23,29,49]
-	# testSZA()
-	# print(getSZAfromTime(itime,360-184.7,-14.64))
-	mapSZA(itime)
-	a = getMarsSolarGeometry(itime)
-	print( a)
-	# print( getLTfromTime(itime,38))
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Compute Mars solar geometry: SZA and LT"
+    )
+    parser.add_argument(
+        "time",
+        type=parse_time,
+        help="UTC time in format YYYY-MM-DDTHH:MM[:SS] (e.g. 2015-10-04T00:00:00)"
+    )
+    parser.add_argument("lat", type=float, help="Latitude in degrees")
+    parser.add_argument("lon", type=float, help="Longitude in degrees")
+
+    args = parser.parse_args()
+
+    itime = args.time
+    lat = args.lat
+    lon = args.lon
+
+    a = getMarsSolarGeometry(itime)
+
+    print("SZA: {}".format(getSZAfromTime(a, lon, lat)))
+    print("LT: {}".format(getLTfromTime(a, lon)))
+    print("Geometry:", a)
