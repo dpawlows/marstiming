@@ -17,8 +17,9 @@ from collections import namedtuple
 from astroquery.jplhorizons import Horizons
 from astropy.utils import iers
 import astropy.time as aptime
+import astropy.units as u
 import os
-from matplotlib import pyplot as pp 
+from matplotlib import pyplot as pp
 import argparse
 
 # Path to the manually downloaded IERS-A file needed for correct leap seconds
@@ -127,11 +128,11 @@ def getMarsSolarGeometry(iTime):
 	return d1
 
 def getSZAfromTime(timedata, lon, lat):
-	'''Get SZA from Mars coordinates and precomputed Mars time data.
-	:param timedata: output from getMarsSolarGeometry
-	:param lon: the longitude in degrees (scalar or array)
-	:param lat: the latitude in degrees (scalar or array)
-	:returns: the solar zenith angle (same shape as input)'''
+        '''Get SZA from Mars coordinates and precomputed Mars time data.
+        :param timedata: output from getMarsSolarGeometry
+        :param lon: the longitude in degrees (scalar or array)
+        :param lat: the latitude in degrees (scalar or array)
+        :returns: the solar zenith angle (same shape as input)'''
 
 	lon = np.asarray(lon)
 	lat = np.asarray(lat)
@@ -146,8 +147,8 @@ def getSZAfromTime(timedata, lon, lat):
 	
 	arg = np.clip(arg, -1.0, 1.0)
 	SZA = np.arccos(arg) / d2R
-	
-	return SZA
+        
+        return SZA
 
 
 def getUTCfromLS(marsyear,LS):
@@ -258,12 +259,12 @@ def SZAGetTime(sza,date, lon, lat):
 			return thisDate, thisSza
 
 		diff = newdiff
-
-	return thisDate, thisSza
+        
+        return thisDate, thisSza
 
 
 def getLTfromTime(timedata,lon):
-	'''The mars local solar time from an earth time and mars longitude.
+        '''The mars local solar time from an earth time and mars longitude.
 
 	:param timedata: output from getMarsSolarGeometry
 	:param lon: the EAST!!!! longitude in degrees
@@ -276,14 +277,48 @@ def getLTfromTime(timedata,lon):
 	LMST = timedata.MTC + lon_e * (24 / 360.)
 	LTST = LMST + timedata.EOT * (24 / 360.)
 
-	return LTST % 24
+        return LTST % 24
+
+
+def getEarthMarsGeometry(iTime, AU=False):
+        """Compute the Earth–Mars distance and the Earth–Sun–Mars angle.
+
+        :param iTime: 6 element time list [y,m,d,h,m,s] or a datetime
+        :param AU: if True, return the distance in astronomical units (AU), otherwise meters
+        :returns: named tuple with ``distance`` (float) and ``angle`` (degrees)
+        """
+
+        if isinstance(iTime, datetime.datetime):
+                iTime = [iTime.year, iTime.month, iTime.day, iTime.hour, iTime.minute, iTime.second]
+
+        y, m, d, H, M, S = iTime
+        time = f"{y:04d}-{m:02d}-{d:02d}T{H:02d}:{M:02d}:{S:02d}"
+        t = aptime.Time(time, scale='utc')
+
+        epochs = t.jd
+
+        earth_vec = Horizons(id='399', location='@sun', epochs=epochs).vectors()
+        mars_vec = Horizons(id='499', location='@sun', epochs=epochs).vectors()
+
+        earth_xyz = np.array([earth_vec['x'][0], earth_vec['y'][0], earth_vec['z'][0]], dtype=float)
+        mars_xyz = np.array([mars_vec['x'][0], mars_vec['y'][0], mars_vec['z'][0]], dtype=float)
+
+        dist_au = np.linalg.norm(mars_xyz - earth_xyz)
+        distance = dist_au if AU else dist_au * u.au.to(u.m)
+
+        cos_angle = np.dot(earth_xyz, mars_xyz) / (np.linalg.norm(earth_xyz) * np.linalg.norm(mars_xyz))
+        cos_angle = np.clip(cos_angle, -1.0, 1.0)
+        angle_deg = np.degrees(np.arccos(cos_angle))
+
+        Geometry = namedtuple('EarthMarsGeometry', 'distance angle')
+        return Geometry(distance=distance, angle=angle_deg)
 
 
 def mapSZA(iTime,nlons=360,nlats=180,savefile="sza_map.png"):
-	'''Create an SZA map given an Earth time
+        '''Create an SZA map given an Earth time
 
-	:param iTime: 6 element list: [y,m,d,h,m,s] or datetime object
-	:param nlons: number of longitude points
+        :param iTime: 6 element list: [y,m,d,h,m,s] or datetime object
+        :param nlons: number of longitude points
     :param nlats: number of latitude points
     :param savefile: output filename for the plot
 	:returns: null
