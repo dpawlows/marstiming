@@ -100,8 +100,6 @@ def getMarsSolarGeometry(iTime):
 	# Using astropy gets us almost exactly 1 day off?
 	j2000 = tt.jd - 2451545.0
 
-	year = int((t.jd - rDate) / DPY) + 1 #MY starts at 1.
-
 	M,alpha,PBS,vMinusM = getMarsParams(j2000)
 
 	LS = (alpha + vMinusM)
@@ -120,6 +118,7 @@ def getMarsSolarGeometry(iTime):
 	sol_in_year = sol %  668.5991 #nsols per mars year
 	if sol_in_year < 0:
 	    sol_in_year += 668.5991 # just in case we start before Mars epoch
+	year = int(sol / 668.5991) + 1  # derived from sol, guaranteed consistent
 
 	data = namedtuple('data','datetime ls year sol M alpha PBS vMinusM MTC EOT subSolarLon solarDec')
 	d1 = data(datetime=time, ls = LS,year=year,sol=sol_in_year,M=M,alpha=alpha,PBS=PBS,vMinusM=vMinusM,MTC=MTC,EOT=EOT,
