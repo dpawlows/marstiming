@@ -114,11 +114,18 @@ def getMarsSolarGeometry(iTime):
 	   #we always use deg E
 	   
 	solarDec = (np.arcsin(0.42565*np.sin(LS*d2R))/d2R+0.25*np.sin(LS*d2R))
+
+	# NOTE: sol_in_year and year may be slightly inconsistent at the Mars year boundary
+	# (Ls=0) due to the Ls and sol periods not being exactly commensurate. This is a
+	# known cosmetic issue - use Ls or raw timeas the primary time axis for climatological analysis.
 	sol = ((tt.jd - rDate) / MSD_per_day) #Uses start of Mars year 1 as epoch
 	sol_in_year = sol %  668.5991 #nsols per mars year
 	if sol_in_year < 0:
 	    sol_in_year += 668.5991 # just in case we start before Mars epoch
-	year = int(sol / 668.5991) + 1  # derived from sol, guaranteed consistent
+	
+	year = int(sol / 668.5991) + 1
+	if LS < 1.0 and sol_in_year > 660:
+		year += 1
 
 	data = namedtuple('data','datetime ls year sol M alpha PBS vMinusM MTC EOT subSolarLon solarDec')
 	d1 = data(datetime=time, ls = LS,year=year,sol=sol_in_year,M=M,alpha=alpha,PBS=PBS,vMinusM=vMinusM,MTC=MTC,EOT=EOT,
