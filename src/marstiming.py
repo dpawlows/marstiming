@@ -72,7 +72,7 @@ def getMarsSolarGeometry(iTime):
 
 	:param iTime: 6 element time list [y,m,d,h,m,s] or a datetime
 	:returns: a named tuple containing the LS value as well as
-	     several parameters necessary for other calculations
+		 several parameters necessary for other calculations
 
 	'''
 	
@@ -121,7 +121,7 @@ def getMarsSolarGeometry(iTime):
 	sol = ((tt.jd - rDate) / MSD_per_day) #Uses start of Mars year 1 as epoch
 	sol_in_year = sol %  668.5991 #nsols per mars year
 	if sol_in_year < 0:
-	    sol_in_year += 668.5991 # just in case we start before Mars epoch
+		sol_in_year += 668.5991 # just in case we start before Mars epoch
 	
 	year = int(sol / 668.5991) + 1
 	if LS < 1.0 and sol_in_year > 660:
@@ -146,14 +146,14 @@ def getSZAfromTime(timedata, lon, lat):
 	delta_lon = (lon - timedata.subSolarLon + 180) % 360 - 180
 
 	arg = (
-        np.sin(timedata.solarDec*d2R)*np.sin(lat*d2R) +
-        np.cos(timedata.solarDec*d2R)*np.cos(lat*d2R) *
+		np.sin(timedata.solarDec*d2R)*np.sin(lat*d2R) +
+		np.cos(timedata.solarDec*d2R)*np.cos(lat*d2R) *
 		np.cos(delta_lon*d2R) 
 	)
 	
 	arg = np.clip(arg, -1.0, 1.0)
 	SZA = np.arccos(arg) / d2R
-        
+		
 	return SZA
 
 
@@ -177,8 +177,8 @@ def getUTCfromLS(marsyear,LS):
 	rDate = aptime.Time(time,scale='tt').jd
 
 	#LS 0 of given mars year
-	iTime = aptime.Time((rDate+(marsyear-1)*DPY),format='jd',scale='utc').to_datetime
-
+	iTime = aptime.Time((rDate+(marsyear-1)*DPY),format='jd',scale='utc')
+	iTime = iTime.to_datetime()
 	#Now we have a guess, iterate over the day to get closer and closer.
 
 	thisTime = [iTime.year,iTime.month,iTime.day,iTime.hour,iTime.minute,iTime.second]
@@ -198,8 +198,7 @@ def getUTCfromLS(marsyear,LS):
 		thisLS,myear = timedata.ls, timedata.year
 		if myear < marsyear and thisLS > 350:
 			thisLS = thisLS - 360
-			myear = marsyear 
-			breakpoint()
+			myear = marsyear
 		diff = np.abs(thisLS - LS)
 		
 		#Based on how far we are off our initial guess, move forward in time
@@ -211,10 +210,10 @@ def getUTCfromLS(marsyear,LS):
 			if counter > 1:
 				dt = dt/60.
 
-		if thisLS < LS: 
-			#If we've overshot the original guess, then turn around. 
-			#This can happen beacuse getMarsSolarGeometry can return a very small LS 
-			#but also the previous mars year for some reason.
+		if thisLS < LS and myear <= marsyear:
+			#If we're behind the target in the correct year, go forward.
+			#Do NOT apply this if myear > marsyear: we've overshot into the next
+			#year and the diff>olddiff reversal above should be respected.
 			factor = np.abs(factor)
 			myear = marsyear
 		olddiff = diff
@@ -223,8 +222,47 @@ def getUTCfromLS(marsyear,LS):
 		if iTry > 1000:
 			print( 'Problem getting UTC from Ls in 2nd diff loop')
 			print( 'Quitting if function getUTCfromLS...')
-			breakpoint()
 			exit(1)
+
+	return iTime
+
+
+def getTimeFromSubSolarLon(datetime_str, date_str):
+	'''Find the time on a given Earth date when the subsolar longitude matches
+	the subsolar longitude at a given Earth datetime.
+
+	:param datetime_str: ISO datetime string 'YYYY-MM-DDTHH:MM:SS'
+	:param date_str: date string 'YYYY-MM-DD'
+	:returns: datetime object for the matching time on date_str
+	'''
+	# Get target subsolar longitude from reference datetime
+	ref_time = parse_time(datetime_str)
+	ref_data = getMarsSolarGeometry(ref_time)
+	target_lon = ref_data.subSolarLon
+
+	# Start at midnight on target date
+	iTime = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+
+	error = 0.01  # degrees
+	LON_RATE = 360.0 / 24.6597  # degrees per Earth hour (one Mars sol)
+
+	for iTry in range(1000):
+		t_list = [iTime.year, iTime.month, iTime.day, iTime.hour, iTime.minute, iTime.second]
+		data = getMarsSolarGeometry(t_list)
+		current_lon = data.subSolarLon
+
+		# Signed angular difference in [-180, 180]; sign drives direction
+		diff = ((target_lon - current_lon + 180) % 360) - 180
+
+		if abs(diff) < error:
+			break
+
+		# subSolarLon decreases as time advances (retrograde in east lon),
+		# so subtract rather than add to move in the correct direction.
+		# Factor of 0.5 damps overshoot from the approximate LON_RATE.
+		iTime -= datetime.timedelta(hours=0.5 * diff / LON_RATE)
+	else:
+		print('getTimeFromSubSolarLon: failed to converge after 1000 iterations')
 
 	return iTime
 
@@ -265,7 +303,7 @@ def SZAGetTime(sza,date, lon, lat):
 			return thisDate, thisSza
 
 		diff = newdiff
-        
+		
 	return thisDate, thisSza
 
 
@@ -325,8 +363,8 @@ def mapSZA(iTime,nlons=360,nlats=180,savefile="sza_map.png"):
 	
 	:param iTime: 6 element list: [y,m,d,h,m,s] or datetime object
 	:param nlons: number of longitude points
-    :param nlats: number of latitude points
-    :param savefile: output filename for the plot
+	:param nlats: number of latitude points
+	:param savefile: output filename for the plot
 	:returns: null
 	'''
 
@@ -365,36 +403,51 @@ def mapSZA(iTime,nlons=360,nlats=180,savefile="sza_map.png"):
 
 
 def parse_time(timestr):
-    """
-    Parse an ISO-like timestamp (YYYY-MM-DDTHH:MM:SS) into [Y,M,D,H,M,S].
-    Seconds are optional.
-    """
-    try:
-        dt = datetime.datetime.strptime(timestr, "%Y-%m-%dT%H:%M:%S")
-    except ValueError:
-        dt = datetime.datetime.strptime(timestr, "%Y-%m-%dT%H:%M")  # allow no seconds
-    return [dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second]
+	"""
+	Parse an ISO-like timestamp (YYYY-MM-DDTHH:MM:SS) into [Y,M,D,H,M,S].
+	Seconds are optional.
+	"""
+	try:
+		dt = datetime.datetime.strptime(timestr, "%Y-%m-%dT%H:%M:%S")
+	except ValueError:
+		dt = datetime.datetime.strptime(timestr, "%Y-%m-%dT%H:%M")  # allow no seconds
+	return [dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second]
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Compute Mars solar geometry: SZA and LT"
-    )
-    parser.add_argument(
-        "time",
-        type=parse_time,
-        help="UTC time in format YYYY-MM-DDTHH:MM[:SS] (e.g. 2015-10-04T00:00:00)"
-    )
-    parser.add_argument("lat", type=float, help="Latitude in degrees")
-    parser.add_argument("lon", type=float, help="Longitude in degrees")
+	parser = argparse.ArgumentParser(
+		description="Compute Mars solar geometry: SZA and LT"
+	)
+	parser.add_argument(
+		"--time",
+		type=parse_time,
+		help="UTC time in format YYYY-MM-DDTHH:MM[:SS] (e.g. 2015-10-04T00:00:00)"
+	)
+	parser.add_argument("--lat", type=float, help="Latitude in degrees")
+	parser.add_argument("--lon", type=float, help="Longitude in degrees")
+	parser.add_argument("--my", type=int, help="Mars year")
+	parser.add_argument("--ls", type=float, help="Ls")
+	parser.add_argument("--date", type=str, help="Target date for subsolar longitude match (YYYY-MM-DD)")
 
-    args = parser.parse_args()
+	args = parser.parse_args()
 
-    itime = args.time
-    lat = args.lat
-    lon = args.lon
+	if args.my:
+		print(getUTCfromLS(args.my,args.ls))
 
-    a = getMarsSolarGeometry(itime)
+	if args.time and args.date:
+		# Reconstruct the original datetime string from the parsed list
+		t = args.time
+		datetime_str = f"{t[0]:04d}-{t[1]:02d}-{t[2]:02d}T{t[3]:02d}:{t[4]:02d}:{t[5]:02d}"
+		result = getTimeFromSubSolarLon(datetime_str, args.date)
+		print("Matching subsolar longitude time: {}".format(result))
 
-    print("SZA: {}".format(getSZAfromTime(a, lon, lat)))
-    print("LT: {}".format(getLTfromTime(a, lon)))
-    print("Geometry:", a)
+	if args.time and not args.date:
+		itime = args.time
+		lat = args.lat
+		lon = args.lon
+
+		a = getMarsSolarGeometry(itime)
+
+		if lat is not None and lon is not None:
+			print("SZA: {}".format(getSZAfromTime(a, lon, lat)))
+			print("LT: {}".format(getLTfromTime(a, lon)))
+		print("Geometry:", a)
