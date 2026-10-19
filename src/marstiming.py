@@ -447,7 +447,24 @@ if __name__ == "__main__":
 
 		a = getMarsSolarGeometry(itime)
 
+		def hhmm(hours):
+			h = int(hours)
+			m = int(round((hours - h) * 60))
+			if m == 60:
+				h, m = (h + 1) % 24, 0
+			return f"{h:02d}:{m:02d}"
+
+		print(f"Mars solar geometry at {a.datetime} UTC")
+		print(f"  Mars year:           {a.year}")
+		print(f"  Sol of year:         {a.sol:.2f}")
+		print(f"  Ls:                  {a.ls:.2f}°")
+		print(f"  Coordinated time:    {a.MTC:.3f} h ({hhmm(a.MTC)} MTC)")
+		print(f"  Subsolar longitude:  {a.subSolarLon:.2f}°E")
+		print(f"  Solar declination:   {a.solarDec:.2f}°")
+		print(f"  Equation of time:    {a.EOT:.2f}°")
+
 		if lat is not None and lon is not None:
-			print("SZA: {}".format(getSZAfromTime(a, lon, lat)))
-			print("LT: {}".format(getLTfromTime(a, lon)))
-		print("Geometry:", a)
+			lt = getLTfromTime(a, lon)
+			print(f"\n  At {lat:.2f}°N, {lon:.2f}°E:")
+			print(f"  Local solar time:    {lt:.3f} h ({hhmm(lt)} LTST)")
+			print(f"  Solar zenith angle:  {getSZAfromTime(a, lon, lat):.2f}°")
